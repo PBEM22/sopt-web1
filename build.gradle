@@ -1,0 +1,76 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
+
+    // jib 플러그인
+    id 'com.google.cloud.tools.jib' version '3.4.0'
+}
+
+group = 'org.sopt'
+version = '0.0.1-SNAPSHOT'
+description = 'web1'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 헬스 체크
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // 테스트 컨테이너용 데이터베이스
+    runtimeOnly 'com.h2database:h2'
+}
+
+jib {
+    from {
+        image = 'eclipse-temurin:17-jdk'
+    }
+    to {
+        // Docker Hub 이미지 주소 (ex: docker.io/본인아이디/레포지토리명)
+        image = project.hasProperty('jibToImage') ? project.getProperty('jibToImage') : 'docker.io/default-user/default-repo'
+
+        // 태그 설정: 입력받은 태그(run-id)와 'latest' 태그를 동시에 푸시하도록 설정
+        tags = project.hasProperty('jibTag')
+                ? [project.getProperty('jibTag'), 'latest']
+                : ['latest']
+
+        if (project.hasProperty("dockerHubUsername") && project.hasProperty("dockerHubPassword")) {
+            auth {
+                username = project.findProperty("dockerHubUsername").toString()
+                password = project.findProperty("dockerHubPassword").toString()
+            }
+        }
+    }
+    container {
+        jvmFlags = ["-Xms512m", "-Xmx512m"]
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        format = 'Docker'
+        // ports는 제거하셨으므로 생략
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
