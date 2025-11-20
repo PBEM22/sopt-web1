@@ -63,7 +63,7 @@ jobs:
           STATUS=$(curl -k --connect-timeout 10 --max-time 30 -o /dev/null -w "%{http_code}" "https://${{ secrets.DOMAIN }}/actuator/health" || echo "000")
           echo "Health Status: $STATUS"
           if [ $STATUS = 200 ]; then
-            CURRENT_UPSTREAM=$(curl -s -k --connect-timeout 10 --max-time 30 "https://${{ secrets.DOMAIN }}/api/v1/env")            
+            CURRENT_UPSTREAM=$(curl -s -k https://${{ secrets.HOUME_DOMAIN }}/api/v1/env | jq -r '.env')            
             
             if [ -z "$CURRENT_UPSTREAM" ] || [ "$CURRENT_UPSTREAM" = "null" ]; then
               echo "Actuator returned null. Defaulting to GREEN."
