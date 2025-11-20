@@ -39,7 +39,7 @@ dependencies {
 
     // 헬스 체크
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    // 테스트 컨테이너용 데이터베이스
+    // 테스트 컨테이너용 DB
     runtimeOnly 'com.h2database:h2'
 }
 
