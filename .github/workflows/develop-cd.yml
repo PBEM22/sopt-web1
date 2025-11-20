@@ -37,10 +37,12 @@ jobs:
           mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION_DEFAULT }}" > ./src/main/resources/application.yml
 
-      - name: Add application-dev.yml
+      - name: Add application.yml
         run: |
           mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION_DEV }}" > ./src/main/resources/application-dev.yml
+          cat << 'EOF' > ./src/main/resources/application.yml
+          ${{ secrets.APPLICATION_DEFAULT }}
+          EOF
 
       - name: Jib로 이미지 빌드 및 Docker Hub 업로드
         run: |
