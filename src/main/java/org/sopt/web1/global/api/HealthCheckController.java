@@ -14,7 +14,7 @@ import java.util.Map;
 @Tag(name = "HealthCheck", description = "서버 상태 확인 API")
 public class HealthCheckController {
 
-    @Value("${server.env}")
+    @Value("${server.env:default}")
     private String serverEnv;
 
     // green인지 blue인지 확인
